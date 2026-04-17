@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python For Loop Trainer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #000;
+    color: #00ff41;
+    font-family: 'Courier New', Consolas, Monaco, monospace;
+    min-height: 100vh;
+    font-size: 16px;
+  }
+  body { padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .header {
+    border: 1px solid #00ff41;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 1.4em;
+    letter-spacing: 4px;
+    font-weight: bold;
+  }
+  .header .sub {
+    opacity: 0.6;
+    font-size: 0.85em;
+    margin-top: 6px;
+    letter-spacing: 2px;
+  }
+
+  .status {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #00ff41;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+  }
+  .status > div { text-align: center; padding: 4px; }
+  .status .label { opacity: 0.55; font-size: 0.75em; letter-spacing: 1px; }
+  .status .value { font-size: 1.15em; margin-top: 3px; font-weight: bold; }
+
+  .prompt-box {
+    border: 1px solid #00ff41;
+    padding: 18px;
+    margin-bottom: 15px;
+    min-height: 90px;
+  }
+  .prompt-label {
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .prompt-text { line-height: 1.6; }
+
+  .input-line {
+    display: flex;
+    align-items: center;
+    border: 1px solid #00ff41;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #001100;
+  }
+  .prompt-sign {
+    color: #00ff41;
+    margin-right: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  input[type="text"] {
+    background: transparent;
+    border: none;
+    color: #00ff41;
+    font-family: inherit;
+    font-size: 1em;
+    flex: 1;
+    outline: none;
+    caret-color: #00ff41;
+    min-width: 0;
+  }
+  .input-line.retype-mode { border-color: #ffff00; background: #111100; }
+  .input-line.retype-mode .prompt-sign { color: #ffff00; }
+  .input-line.retype-mode input { color: #ffff00; caret-color: #ffff00; }
+
+  button {
+    background: #000;
+    color: #00ff41;
+    border: 1px solid #00ff41;
+    padding: 10px 22px;
+    font-family: inherit;
+    font-size: 1em;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  button:hover { background: #002200; }
+  button:active { background: #003300; }
+
+  .feedback {
+    min-height: 50px;
+    padding: 10px 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  .feedback.success { color: #00ff41; }
+  .feedback.error { color: #ff3131; }
+
+  .code-block {
+    background: #001100;
+    border: 1px dashed #ffff00;
+    padding: 10px;
+    margin-top: 8px;
+    color: #ffff00;
+    font-weight: bold;
+  }
+  .code-block.wrong {
+    border-color: #ff3131;
+    color: #ff3131;
+  }
+  .code-label { opacity: 0.7; font-size: 0.85em; margin-top: 8px; }
+
+  .final-screen {
+    text-align: center;
+    padding: 25px;
+    border: 2px solid #00ff41;
+  }
+  .final-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+    text-align: left;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .final-stats .stat {
+    border: 1px solid #00ff41;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+  .final-stats .stat span { color: #00ffff; font-weight: bold; }
+  .final-score {
+    font-size: 3em;
+    color: #00ffff;
+    margin: 15px 0 5px;
+    letter-spacing: 4px;
+    font-weight: bold;
+  }
+  .score-label { opacity: 0.6; letter-spacing: 3px; font-size: 0.85em; }
+
+  .blink { animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+  .hidden { display: none !important; }
+
+  .start-screen { text-align: center; padding: 20px; }
+  .start-screen h2 { color: #00ffff; margin-bottom: 15px; letter-spacing: 2px; }
+  .start-screen p { margin-bottom: 10px; opacity: 0.9; }
+  .start-screen ul {
+    text-align: left;
+    max-width: 640px;
+    margin: 20px auto;
+    list-style: none;
+  }
+  .start-screen li {
+    margin: 6px 0;
+    padding-left: 22px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .start-screen li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .start-screen .example {
+    max-width: 540px;
+    margin: 15px auto;
+    text-align: left;
+    border: 1px solid #004400;
+    padding: 10px 14px;
+    background: #000800;
+    font-size: 0.9em;
+  }
+  .start-screen .example .ex-label {
+    color: #00ffff;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+  }
+
+  .level-banner {
+    text-align: center;
+    font-size: 1.3em;
+    color: #00ffff;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; font-size: 14px; }
+    .status { grid-template-columns: repeat(3, 1fr); font-size: 0.8em; }
+    .final-stats { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.1em; letter-spacing: 2px; }
+  }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: #004400; border: 1px solid #00ff41; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>[ PYTHON FOR LOOP TRAINER ]</h1>
+    <div class="sub">CS 1430 :: SPEED DRILL PROTOCOL v1.0</div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen" class="start-screen">
+    <h2>// MISSION BRIEFING</h2>
+    <p>Master all 4 levels of Python for loops as fast as you can.</p>
+    <ul>
+      <li>LEVEL 1 :: Simple repeat loops &nbsp;(3 correct required)</li>
+      <li>LEVEL 2 :: Start and stop loops &nbsp;(2 correct required)</li>
+      <li>LEVEL 3 :: Start, stop, step loops &nbsp;(2 correct required)</li>
+      <li>LEVEL 4 :: Mixed challenge &nbsp;(4 correct required)</li>
+      <li>Wrong answer? Retype the correct code to continue. It will NOT count toward your correct total.</li>
+      <li>Every question uses an underscore iterator: <code style="color:#ffff00">for _ in range(...)</code></li>
+      <li>Score = first-try correct answers, minus a time penalty. Accuracy and speed both count.</li>
+    </ul>
+    <div class="example">
+      <div class="ex-label">// EXAMPLE FORMAT</div>
+      <div>Prompt: <span style="color:#fff">repeat 7 times</span></div>
+      <div>Answer: <span style="color:#ffff00">for _ in range(7):</span></div>
+    </div>
+    <p style="margin-top:20px;">Press ENTER or click INITIATE to begin.</p>
+    <br>
+    <button id="startBtn">[ INITIATE ]<span class="blink">_</span></button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="hidden">
+    <div class="status">
+      <div><div class="label">LEVEL</div><div class="value" id="statLevel">1/4</div></div>
+      <div><div class="label">PROGRESS</div><div class="value" id="statProgress">0/4</div></div>
+      <div><div class="label">CORRECT</div><div class="value" id="statCorrect" style="color:#00ff41;">0</div></div>
+      <div><div class="label">WRONG</div><div class="value" id="statWrong" style="color:#ff3131;">0</div></div>
+      <div><div class="label">TIME</div><div class="value" id="statTime" style="color:#00ffff;">00:00</div></div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-label" id="promptLabel">&gt; MISSION</div>
+      <div class="prompt-text" id="promptText"></div>
+    </div>
+
+    <div class="input-line" id="inputLine">
+      <span class="prompt-sign">root@python:~$</span>
+      <input type="text" id="answerInput" autocomplete="off" spellcheck="false" autocapitalize="off">
+    </div>
+
+    <button id="submitBtn">[ EXECUTE ]</button>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div id="endScreen" class="hidden final-screen">
+    <h2 style="color:#00ffff; letter-spacing:2px;">// DRILL COMPLETE</h2>
+    <div class="final-score" id="finalScore">0</div>
+    <div class="score-label">FINAL SCORE</div>
+    <div class="final-stats">
+      <div class="stat">FIRST TRY CORRECT: <span id="finalCorrect">0</span> / 11</div>
+      <div class="stat">WRONG ATTEMPTS: <span id="finalWrong">0</span></div>
+      <div class="stat">TOTAL TIME: <span id="finalTime">00:00</span></div>
+      <div class="stat">ACCURACY: <span id="finalAccuracy">0%</span></div>
+    </div>
+    <div id="rankLine" style="margin:10px 0 20px; color:#ffff00; letter-spacing:2px;"></div>
+    <button id="restartBtn">[ REBOOT ]</button>
+  </div>
+
+</div>
+
+<script>
+  // ================= STATE =================
+  const state = {
+    level: 1,
+    questionNum: 0,
+    firstTryCorrect: 0,
+    wrongAnswers: 0,
+    currentQ: null,
+    attempted: false,
+    retypeMode: false,
+    retypeTarget: null,
+    lastWrongInput: '',
+    startTime: null,
+    timerId: null,
+    level4Queue: []
+  };
+
+  const levelReqs = [3, 2, 2, 4];
+  const TOTAL_QUESTIONS = levelReqs.reduce((a, b) => a + b, 0);
+
+  // ================= QUESTION GENERATORS =================
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function genLevel1() {
+    const n = randInt(3, 20);
+    return {
+      type: 1,
+      prompt: `Write the first line of a python for loop with an underscore iterator that will repeat ${n} times.`,
+      answer: `for _ in range(${n}):`,
+      regex: new RegExp(`^for\\s+_\\s+in\\s+range\\s*\\(\\s*${n}\\s*\\)\\s*:$`)
+    };
+  }
+
+  function genLevel2() {
+    const start = randInt(1, 12);
+    const stop = start + randInt(6, 25);
+    return {
+      type: 2,
+      prompt: `Write the first line of a python for loop with an underscore iterator that starts at ${start} and stops at ${stop}.`,
+      answer: `for _ in range(${start}, ${stop}):`,
+      regex: new RegExp(`^for\\s+_\\s+in\\s+range\\s*\\(\\s*${start}\\s*,\\s*${stop}\\s*\\)\\s*:$`)
+    };
+  }
+
+  function genLevel3() {
+    const start = randInt(1, 10);
+    const step = randInt(2, 7);
+    const count = randInt(4, 10);
+    const stop = start + step * count;
+    return {
+      type: 3,
+      prompt: `Write the first line of a python for loop with an underscore iterator that starts at ${start}, counts to ${stop} by ${step}s.`,
+      answer: `for _ in range(${start}, ${stop}, ${step}):`,
+      regex: new RegExp(`^for\\s+_\\s+in\\s+range\\s*\\(\\s*${start}\\s*,\\s*${stop}\\s*,\\s*${step}\\s*\\)\\s*:$`)
+    };
+  }
+
+  function genForLevel(lvl) {
+    if (lvl === 1) return genLevel1();
+    if (lvl === 2) return genLevel2();
+    if (lvl === 3) return genLevel3();
+    return genLevel1();
+  }
+
+  // Level 4 guarantees at least one from each of levels 1, 2, 3, then fills.
+  function buildLevel4Queue() {
+    const qs = [genLevel1(), genLevel2(), genLevel3()];
+    qs.push(genForLevel(randInt(1, 3)));
+    // Fisher-Yates shuffle
+    for (let i = qs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [qs[i], qs[j]] = [qs[j], qs[i]];
+    }
+    return qs;
+  }
+
+  // ================= FLOW =================
+  function nextQuestion() {
+    state.attempted = false;
+    state.retypeMode = false;
+    state.retypeTarget = null;
+    state.lastWrongInput = '';
+
+    // Level complete?
+    if (state.questionNum >= levelReqs[state.level - 1]) {
+      state.level++;
+      state.questionNum = 0;
+      if (state.level > 4) {
+        endGame();
+        return;
+      }
+      if (state.level === 4) {
+        state.level4Queue = buildLevel4Queue();
+      }
+      announceLevel();
+      return;
+    }
+
+    if (state.level === 4) {
+      state.currentQ = state.level4Queue[state.questionNum];
+    } else {
+      state.currentQ = genForLevel(state.level);
+    }
+    renderQuestion();
+  }
+
+  function announceLevel() {
+    const names = ['', 'Simple Repeat', 'Start and Stop', 'Start, Stop, Step', 'Challenge Mix'];
+    const input = document.getElementById('answerInput');
+    const req = levelReqs[state.level - 1];
+    document.getElementById('promptLabel').textContent = `> LEVEL ${state.level} :: ${names[state.level].toUpperCase()}`;
+    document.getElementById('promptText').innerHTML =
+      `<div class="level-banner">[ ${req} CORRECT REQUIRED ]</div>` +
+      `<div style="opacity:0.7; margin-top:8px; text-align:center;">Loading...</div>`;
+    document.getElementById('feedback').textContent = '';
+    input.value = '';
+    input.disabled = true;
+    updateStatus();
+    setTimeout(() => {
+      input.disabled = false;
+      nextQuestion();
+    }, 1400);
+  }
+
+  function renderQuestion() {
+    document.getElementById('promptLabel').textContent = '> MISSION';
+    document.getElementById('promptText').textContent = state.currentQ.prompt;
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('feedback').className = 'feedback';
+    const input = document.getElementById('answerInput');
+    input.value = '';
+    input.focus();
+    document.getElementById('inputLine').classList.remove('retype-mode');
+    updateStatus();
+  }
+
+  function renderRetype() {
+    document.getElementById('promptLabel').textContent = '> RETYPE TO CONTINUE';
+    const html =
+      '<div style="color:#ff3131;">INCORRECT. Study the correct answer, then retype it exactly:</div>' +
+      '<div class="code-label">YOU TYPED:</div>' +
+      '<div class="code-block wrong">' + escapeHtml(state.lastWrongInput || '(blank)') + '</div>' +
+      '<div class="code-label">CORRECT:</div>' +
+      '<div class="code-block">' + escapeHtml(state.retypeTarget) + '</div>';
+    document.getElementById('promptText').innerHTML = html;
+    const input = document.getElementById('answerInput');
+    input.value = '';
+    input.focus();
+    document.getElementById('inputLine').classList.add('retype-mode');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function updateStatus() {
+    const lvl = Math.min(state.level, 4);
+    document.getElementById('statLevel').textContent = `${lvl}/4`;
+    const req = levelReqs[lvl - 1];
+    document.getElementById('statProgress').textContent = `${state.questionNum}/${req}`;
+    document.getElementById('statCorrect').textContent = state.firstTryCorrect;
+    document.getElementById('statWrong').textContent = state.wrongAnswers;
+  }
+
+  // ================= ANSWER CHECKING =================
+  function checkAnswer(input) {
+    return state.currentQ.regex.test(input.trim());
+  }
+
+  function checkRetype(input) {
+    // Same regex, since any valid form of the target is acceptable.
+    return state.currentQ.regex.test(input.trim());
+  }
+
+  function handleSubmit() {
+    const inputEl = document.getElementById('answerInput');
+    const input = inputEl.value;
+    if (!input.trim()) return;
+
+    const fb = document.getElementById('feedback');
+
+    if (state.retypeMode) {
+      if (checkRetype(input)) {
+        fb.className = 'feedback success';
+        fb.textContent = '> Retype accepted. Continuing drill...';
+        inputEl.disabled = true;
+        setTimeout(() => {
+          inputEl.disabled = false;
+          state.questionNum++;
+          nextQuestion();
+        }, 500);
+      } else {
+        fb.className = 'feedback error';
+        fb.textContent = '> Does not match. Try typing the correct code again.';
+        inputEl.value = '';
+        inputEl.focus();
+      }
+      return;
+    }
+
+    if (checkAnswer(input)) {
+      if (!state.attempted) {
+        state.firstTryCorrect++;
+      }
+      fb.className = 'feedback success';
+      fb.textContent = '> CORRECT. Access granted.';
+      inputEl.disabled = true;
+      updateStatus();
+      setTimeout(() => {
+        inputEl.disabled = false;
+        state.questionNum++;
+        nextQuestion();
+      }, 500);
+    } else {
+      state.wrongAnswers++;
+      state.attempted = true;
+      state.retypeMode = true;
+      state.retypeTarget = state.currentQ.answer;
+      state.lastWrongInput = input;
+      fb.className = 'feedback';
+      fb.textContent = '';
+      updateStatus();
+      renderRetype();
+    }
+  }
+
+  // ================= TIMER =================
+  function startTimer() {
+    state.startTime = Date.now();
+    updateTimer();
+    state.timerId = setInterval(updateTimer, 500);
+  }
+
+  function updateTimer() {
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    document.getElementById('statTime').textContent = formatTime(elapsed);
+  }
+
+  function stopTimer() {
+    clearInterval(state.timerId);
+  }
+
+  function formatTime(sec) {
+    const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+    const ss = String(sec % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }
+
+  // ================= SCORING =================
+  function computeScore(firstCorrect, elapsedSec) {
+    // 100 points per first-try correct, minus 2 per second elapsed, floor 0.
+    const base = firstCorrect * 100;
+    const penalty = elapsedSec * 2;
+    return Math.max(0, base - penalty);
+  }
+
+  function rankForScore(score, accuracy) {
+    if (accuracy === 100 && score >= 950) return 'RANK: KERNEL OVERLORD';
+    if (accuracy === 100 && score >= 800) return 'RANK: ROOT USER';
+    if (accuracy >= 85 && score >= 700) return 'RANK: SYSADMIN';
+    if (accuracy >= 70) return 'RANK: OPERATOR';
+    if (accuracy >= 50) return 'RANK: APPRENTICE';
+    return 'RANK: SCRIPT KIDDIE';
+  }
+
+  // ================= END GAME =================
+  function endGame() {
+    stopTimer();
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const accuracy = Math.round((state.firstTryCorrect / TOTAL_QUESTIONS) * 100);
+    const score = computeScore(state.firstTryCorrect, elapsed);
+
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.remove('hidden');
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalCorrect').textContent = state.firstTryCorrect;
+    document.getElementById('finalWrong').textContent = state.wrongAnswers;
+    document.getElementById('finalTime').textContent = formatTime(elapsed);
+    document.getElementById('finalAccuracy').textContent = accuracy + '%';
+    document.getElementById('rankLine').textContent = rankForScore(score, accuracy);
+  }
+
+  // ================= START / RESTART =================
+  function startGame() {
+    state.level = 1;
+    state.questionNum = 0;
+    state.firstTryCorrect = 0;
+    state.wrongAnswers = 0;
+    state.attempted = false;
+    state.retypeMode = false;
+    state.retypeTarget = null;
+    state.lastWrongInput = '';
+    state.level4Queue = [];
+
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+
+    stopTimer();
+    startTimer();
+    announceLevel();
+  }
+
+  // ================= WIRE UP =================
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('restartBtn').addEventListener('click', startGame);
+  document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+  document.getElementById('answerInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(); }
+  });
+  // Allow Enter on start screen to begin.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !document.getElementById('startScreen').classList.contains('hidden')) {
+      startGame();
+    }
+    if (e.key === 'Enter' && !document.getElementById('endScreen').classList.contains('hidden')) {
+      startGame();
+    }
+  });
+</script>
+</body>
+</html>
